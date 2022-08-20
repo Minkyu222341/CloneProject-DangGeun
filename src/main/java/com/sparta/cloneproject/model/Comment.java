@@ -2,6 +2,7 @@ package com.sparta.cloneproject.model;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.sparta.cloneproject.dto.requestDto.CommentRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,5 +32,9 @@ public class Comment {
         this.username = username;
         this.content = content;
         this.article = article;
+    }
+
+    public void update(CommentRequestDto commentRequestDto) {
+        this.content = commentRequestDto.getContent();
     }
 }
