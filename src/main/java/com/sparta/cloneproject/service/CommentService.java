@@ -4,9 +4,12 @@ import com.sparta.cloneproject.dto.requestDto.CommentRequestDto;
 import com.sparta.cloneproject.dto.responseDto.CommentResponseDto;
 import com.sparta.cloneproject.model.Article;
 import com.sparta.cloneproject.model.Comment;
+import com.sparta.cloneproject.model.Member;
 import com.sparta.cloneproject.repository.ArticleRepository;
 import com.sparta.cloneproject.repository.CommentRepository;
+import com.sparta.cloneproject.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +22,13 @@ import java.util.Optional;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final ArticleRepository articleRepository;
-    String USERNAME = "임시 아이디";
+    private final MemberRepository memberRepository;
+
+    public String getLoginMemberId() {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<Member> member = memberRepository.findById(Long.valueOf(userId));
+        return member.get().getUsername();
+    }
 
     /**
      * 게시글에 해당하는 댓글 리스트 호출 , 페이지 전체 리로드를 막기 위해서 따로 호출
@@ -32,7 +41,7 @@ public class CommentService {
             CommentResponseDto buildComment = CommentResponseDto.builder()
                     .content(comment.getContent())
                     .id(comment.getId())
-                    .username(USERNAME)
+                    .username(getLoginMemberId())
                     .build();
             responseDtos.add(buildComment);
         }
@@ -44,7 +53,7 @@ public class CommentService {
      */
     public Comment createComment(Long id, CommentRequestDto commentRequestDto) {
         Optional<Article> article = articleRepository.findById(id);
-        Comment comment = getComment(commentRequestDto, article);
+        Comment comment = createComment(commentRequestDto, article);
         article.get().addComment(comment);
         return commentRepository.save(comment);
     }
@@ -55,6 +64,9 @@ public class CommentService {
     @Transactional
     public Comment updateComment(Long id, CommentRequestDto commentRequestDto) {
         Optional<Comment> findComment = commentRepository.findById(id);
+        if(!findComment.get().getUsername().equals(getLoginMemberId())){
+            throw new IllegalArgumentException("작성자만 수정 할 수 있습니다.");
+        }
         findComment.get().update(commentRequestDto);
         return findComment.get();
     }
@@ -64,6 +76,11 @@ public class CommentService {
      */
     public boolean deleteComment(Long id) {
         Optional<Comment> comment = commentRepository.findById(id);
+
+        if(!comment.get().getUsername().equals(getLoginMemberId())){
+            throw new IllegalArgumentException("작성자만 삭제 할 수 있습니다.");
+        }
+
         Article article = comment.get().getArticle();
         article.remove(comment);
         commentRepository.deleteById(id);
@@ -71,11 +88,11 @@ public class CommentService {
     }
 
 
-    private Comment getComment(CommentRequestDto commentRequestDto, Optional<Article> article) {
+    private Comment createComment(CommentRequestDto commentRequestDto, Optional<Article> article) {
         Comment comment = Comment.builder()
                 .article(article.get())
                 .content(commentRequestDto.getContent())
-                .username(USERNAME)
+                .username(getLoginMemberId())
                 .build();
         return comment;
     }

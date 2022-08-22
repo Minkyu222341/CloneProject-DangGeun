@@ -4,10 +4,13 @@ import com.sparta.cloneproject.dto.requestDto.ArticleRequestDto;
 import com.sparta.cloneproject.dto.responseDto.ArticleResponseDto;
 import com.sparta.cloneproject.model.Article;
 import com.sparta.cloneproject.model.DeletedUrlPath;
+import com.sparta.cloneproject.model.Member;
 import com.sparta.cloneproject.repository.ArticleRepository;
 import com.sparta.cloneproject.repository.DeletedUrlPathRepository;
+import com.sparta.cloneproject.repository.MemberRepository;
 import com.sparta.cloneproject.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +27,13 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final S3Uploader s3Uploader;
     private final DeletedUrlPathRepository deletedUrlPathRepository;
+    private final MemberRepository memberRepository;
+
+    public String getLoginMemberId() {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<Member> member = memberRepository.findById(Long.valueOf(userId));
+        return member.get().getUsername();
+    }
 
     /**
      * 전체 게시글 조회
@@ -52,12 +62,12 @@ public class ArticleService {
     public Article createArticle(ArticleRequestDto requestDto, MultipartFile multipartFile) throws IOException {
         if (multipartFile != null) {
             String pathUrl = s3Uploader.upload(multipartFile);
-            String username = "아이디";
+            String username = getLoginMemberId();
             Article article = getArticle(requestDto, pathUrl, username);
             articleRepository.save(article);
             return article;
         }
-        String username = "아이디";
+        String username = getLoginMemberId();
         Article article = getArticleNotImage(requestDto, username);
         articleRepository.save(article);
         return article;
@@ -69,6 +79,9 @@ public class ArticleService {
     @Transactional
     public Article updateArticle(Long id, ArticleRequestDto requestDto) {
         Optional<Article> findArticle = articleRepository.findById(id);
+        if(!findArticle.get().getUsername().equals(getLoginMemberId())){
+            throw new IllegalArgumentException("작성자만 수정 할 수 있습니다.");
+        }
         findArticle.get().update(requestDto);
         return findArticle.get();
     }
@@ -80,6 +93,9 @@ public class ArticleService {
     public boolean delete(Long id) {
         Optional<Article> findArticle = articleRepository.findById(id);
 
+        if(!findArticle.get().getUsername().equals(getLoginMemberId())){
+            throw new IllegalArgumentException("작성자만 삭제 할 수 있습니다.");
+        }
         // S3버켓에있는 이미지 삭제 관련
         DeletedUrlPath deletedUrlPath = new DeletedUrlPath();
         deletedUrlPath.setDeletedUrlPath(findArticle.get().getImg());

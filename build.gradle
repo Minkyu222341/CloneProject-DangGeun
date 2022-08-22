@@ -33,14 +33,17 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 //    //시큐리티 관련
-//    implementation 'org.springframework.boot:spring-boot-starter-security'
-//    implementation 'org.springframework.boot:spring-boot-starter-validation'
-//    testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    testImplementation 'org.springframework.security:spring-security-test'
 //
 //    //jwt관련
-//    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
-//    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
-//    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+    //카카오 로그인 관련
+    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: '5.6.3'
+    
     //JsonOBJECT 관련 의존성
     implementation 'org.json:json:20200518'
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'

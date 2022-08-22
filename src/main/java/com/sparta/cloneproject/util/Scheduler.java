@@ -3,7 +3,6 @@ package com.sparta.cloneproject.util;
 import com.sparta.cloneproject.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class Scheduler {
     private final ArticleService articleService;
 
-    @Scheduled(cron = "1 * * * * *")
+//    @Scheduled(cron = "1 * * * * *")
     public void removeImage() {
         log.info("S3이미지 삭제 완료");
         articleService.removeS3Image();

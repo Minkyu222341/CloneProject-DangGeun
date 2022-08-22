@@ -6,6 +6,8 @@ import com.sparta.cloneproject.model.Article;
 import com.sparta.cloneproject.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,13 +22,15 @@ public class ArticleController {
     private final ArticleService articleService;
 
     /**
-     *게시글 전체 조회
+     * 게시글 전체 조회
      */
     @GetMapping
-    public List<ArticleResponseDto> getArticleList() {
+    public List<ArticleResponseDto> getArticleList(@AuthenticationPrincipal UserDetails userDetails) {
+        System.out.println(userDetails.getUsername() + " AuthenticationPrincipal");
+//        System.out.println(userDetails.getUsername() + " 유저네임");
         return articleService.getArticleList();
     }
-
+//    @AuthenticationPrincipal UserDetailsImpl userDetails
     /**
      * 게시글 상세 페이지 조회
      */
