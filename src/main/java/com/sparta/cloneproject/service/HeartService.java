@@ -18,10 +18,12 @@ public class HeartService {
     private final HeartRepository heartRepository;
     private final ArticleRepository articleRepository;
     private final MemberRepository memberRepository;
-    public String getLoginMemberId() {
+
+    public Optional<Member> getLoginMember() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<Member> member = memberRepository.findById(Long.valueOf(userId));
-        return member.get().getUsername();
+        Optional<Member> findLoginMember = memberRepository.findByUsername(userId);
+        System.out.println(findLoginMember.get().getId());
+        return findLoginMember;
     }
 
 /**
@@ -29,8 +31,8 @@ public class HeartService {
  * */
     public boolean addLike(Long id) {
         Optional<Article> article = articleRepository.findById(id);
-        if (heartRepository.existsByArticleAndUsername(article.get(), getLoginMemberId())) {
-            Optional<Heart> deletedHeart = heartRepository.findByUsernameAndAndArticle(getLoginMemberId(),article.get());
+        if (heartRepository.existsByArticleAndUserId(article.get(), getLoginMember().get().getId())) {
+            Optional<Heart> deletedHeart = heartRepository.findByUserIdAndAndArticle(getLoginMember().get().getId(),article.get());
             article.get().deleteHeart(deletedHeart.get());
             heartRepository.delete(deletedHeart.get());
             return false;
@@ -43,7 +45,7 @@ public class HeartService {
 
     private Heart getHeart(Optional<Article> article) {
         Heart heart = Heart.builder()
-                .username(getLoginMemberId())
+                .userId(getLoginMember().get().getId())
                 .article(article.get())
                 .build();
         return heart;

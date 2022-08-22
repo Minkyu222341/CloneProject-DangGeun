@@ -15,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/article")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*",exposedHeaders = "*")
 public class ArticleController {
 
     private final ArticleService articleService;

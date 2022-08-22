@@ -28,7 +28,7 @@ public class Article {
     //글내용
     private String content;
     //작성자 아이디
-    private String username;
+    private Long userId;
     //작성자 닉네임
     private String nickname;
     //이미지 
@@ -40,11 +40,11 @@ public class Article {
     //가격
     private long price;
 
-    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE)
     @JsonManagedReference
     private List<Heart> heartList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "article",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "article",cascade = CascadeType.REMOVE)
     @JsonManagedReference
     private List<Comment> commentList = new ArrayList<>();
     //작성시간
@@ -61,11 +61,11 @@ public class Article {
     }
 
     @Builder
-    public Article(Long id, String title, String content, String username, String nickname, String img, String category, String region, long price, List<Heart> heartList, List<Comment> commentList, Timestamp createAt) {
+    public Article(Long id, String title, String content, Long userId, String nickname, String img, String category, String region, long price, List<Heart> heartList, List<Comment> commentList, Timestamp createAt) {
         this.id = id;
         this.title = title;
         this.content = content;
-        this.username = username;
+        this.userId = userId;
         this.nickname = nickname;
         this.img = img;
         this.category = category;

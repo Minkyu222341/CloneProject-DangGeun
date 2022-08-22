@@ -19,13 +19,13 @@ public class Heart {
     @JsonBackReference
     @JoinColumn(name = "articleId")
     private Article article;
-    private String username;
+    private Long userId;
 
     @Builder
-    public Heart(Long id, Article article, String username) {
+    public Heart(Long id, Article article, Long userId) {
         this.id = id;
         this.article = article;
-        this.username = username;
+        this.userId = userId;
     }
 
 

@@ -7,15 +7,15 @@ import lombok.Getter;
 public class CommentResponseDto {
 
     private long id;
-    private String username;
     private String content;
+    private String nickname;
 
 
     @Builder
-    public CommentResponseDto(long id, String username, String content) {
+    public CommentResponseDto(long id, String content,String nickname) {
         this.id = id;
-        this.username = username;
         this.content = content;
+        this.nickname = nickname;
     }
 }
 

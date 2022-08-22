@@ -24,10 +24,11 @@ public class CommentService {
     private final ArticleRepository articleRepository;
     private final MemberRepository memberRepository;
 
-    public String getLoginMemberId() {
+    public Optional<Member> getLoginMember() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<Member> member = memberRepository.findById(Long.valueOf(userId));
-        return member.get().getUsername();
+        Optional<Member> findLoginMember = memberRepository.findByUsername(userId);
+        System.out.println(findLoginMember.get().getId());
+        return findLoginMember;
     }
 
     /**
@@ -41,7 +42,7 @@ public class CommentService {
             CommentResponseDto buildComment = CommentResponseDto.builder()
                     .content(comment.getContent())
                     .id(comment.getId())
-                    .username(getLoginMemberId())
+                    .nickname(comment.getNickname())
                     .build();
             responseDtos.add(buildComment);
         }
@@ -64,7 +65,7 @@ public class CommentService {
     @Transactional
     public Comment updateComment(Long id, CommentRequestDto commentRequestDto) {
         Optional<Comment> findComment = commentRepository.findById(id);
-        if(!findComment.get().getUsername().equals(getLoginMemberId())){
+        if(!findComment.get().getUserId().equals(getLoginMember().get().getId())){
             throw new IllegalArgumentException("작성자만 수정 할 수 있습니다.");
         }
         findComment.get().update(commentRequestDto);
@@ -77,7 +78,7 @@ public class CommentService {
     public boolean deleteComment(Long id) {
         Optional<Comment> comment = commentRepository.findById(id);
 
-        if(!comment.get().getUsername().equals(getLoginMemberId())){
+        if(!comment.get().getUserId().equals(getLoginMember().get().getId())){
             throw new IllegalArgumentException("작성자만 삭제 할 수 있습니다.");
         }
 
@@ -92,7 +93,8 @@ public class CommentService {
         Comment comment = Comment.builder()
                 .article(article.get())
                 .content(commentRequestDto.getContent())
-                .username(getLoginMemberId())
+                .userId(getLoginMember().get().getId())
+                .nickname(getLoginMember().get().getNickname())
                 .build();
         return comment;
     }

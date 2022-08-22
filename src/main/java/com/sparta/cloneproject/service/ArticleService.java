@@ -31,11 +31,8 @@ public class ArticleService {
 
     public Optional<Member> getLoginMember() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<Member> findLoginMember = memberRepository.findByUsername(userId);
-        System.out.println(findLoginMember.get().getUsername());
-        return findLoginMember;
+        return memberRepository.findByUsername(userId);
     }
-    // 미리님도 닉네임이 미리 , 단비님도 닉네임이 미리
 
     /**
      * 전체 게시글 조회
@@ -64,17 +61,15 @@ public class ArticleService {
     public Article createArticle(ArticleRequestDto requestDto, MultipartFile multipartFile) throws IOException {
         if (multipartFile != null) {
             String pathUrl = s3Uploader.upload(multipartFile);
-            String username = getLoginMember().get().getUsername();
+            Long id = getLoginMember().get().getId();
             String nickname = getLoginMember().get().getNickname();
-            Article article = getArticle(requestDto, pathUrl, username,nickname);
+            Article article = getArticle(requestDto, pathUrl, id,nickname);
             articleRepository.save(article);
             return article;
         }
-        String username = getLoginMember().get().getUsername();
-        System.out.println("아이디 : "+username);
+        Long id = getLoginMember().get().getId();
         String nickname = getLoginMember().get().getNickname();
-        System.out.println("닉네임 : "+nickname);
-        Article article = getArticleNotImage(requestDto, username,nickname);
+        Article article = getArticleNotImage(requestDto, id,nickname);
         articleRepository.save(article);
         return article;
     }
@@ -85,7 +80,7 @@ public class ArticleService {
     @Transactional
     public Article updateArticle(Long id, ArticleRequestDto requestDto) {
         Optional<Article> findArticle = articleRepository.findById(id);
-        if(!findArticle.get().getUsername().equals(getLoginMember().get().getUsername())){
+        if(!findArticle.get().getUserId().equals(getLoginMember().get().getId())){
             throw new IllegalArgumentException("작성자만 수정 할 수 있습니다.");
         }
         findArticle.get().update(requestDto);
@@ -99,7 +94,7 @@ public class ArticleService {
     public boolean delete(Long id) {
         Optional<Article> findArticle = articleRepository.findById(id);
 
-        if(!findArticle.get().getUsername().equals(getLoginMember().get().getUsername())){
+        if(!findArticle.get().getUserId().equals(getLoginMember().get().getId())){
             throw new IllegalArgumentException("작성자만 삭제 할 수 있습니다.");
         }
         // S3버켓에있는 이미지 삭제 관련
@@ -152,26 +147,26 @@ public class ArticleService {
         return articleResponseDto;
     }
 
-    private Article getArticle(ArticleRequestDto requestDto, String pathUrl, String username,String nickname) {
+    private Article getArticle(ArticleRequestDto requestDto, String pathUrl, long userId,String nickname) {
         Article article = Article.builder()
                 .content(requestDto.getContent())
                 .price(requestDto.getPrice())
                 .category(requestDto.getCategory())
                 .region(requestDto.getRegion())
                 .img(pathUrl)
-                .username(username)
+                .userId(userId)
                 .nickname(nickname)
                 .build();
         return article;
     }
 
-    private Article getArticleNotImage(ArticleRequestDto requestDto, String username,String nickname) {
+    private Article getArticleNotImage(ArticleRequestDto requestDto, long userId,String nickname) {
         Article article = Article.builder()
                 .content(requestDto.getContent())
                 .price(requestDto.getPrice())
                 .category(requestDto.getCategory())
                 .region(requestDto.getRegion())
-                .username(username)
+                .userId(userId)
                 .nickname(nickname)
                 .build();
         return article;

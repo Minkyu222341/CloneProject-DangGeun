@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface HeartRepository extends JpaRepository<Heart, Long> {
 
-    boolean existsByArticleAndUsername(Article id, String username);
+    boolean existsByArticleAndUserId(Article id, Long memberId);
 
-    Optional<Heart> findByUsernameAndAndArticle(String username,Article article);
+    Optional<Heart> findByUserIdAndAndArticle(Long memberId,Article article);
 }

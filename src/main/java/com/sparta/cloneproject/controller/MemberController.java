@@ -18,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*",exposedHeaders = "*")
 public class MemberController {
 
     private final KakaoUserService kakaoUserService;
