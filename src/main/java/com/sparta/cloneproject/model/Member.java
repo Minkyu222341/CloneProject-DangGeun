@@ -21,6 +21,7 @@ public class Member {
 
     private String nickname;
 
+
     private Long kakaoId;
 
     @Enumerated(EnumType.STRING)
@@ -29,6 +30,7 @@ public class Member {
 
 
     @Builder
+
     public Member(Long id, String username, String password, String nickname, Long kakaoId, Authority authority) {
         this.id = id;
         this.username = username;

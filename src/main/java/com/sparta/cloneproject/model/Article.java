@@ -29,6 +29,8 @@ public class Article {
     private String content;
     //작성자 아이디
     private String username;
+    //작성자 닉네임
+    private String nickname;
     //이미지 
     private String img;
     //카테고리
@@ -58,20 +60,24 @@ public class Article {
         this.price = requestDto.getPrice();
     }
 
-
     @Builder
-    public Article(Long id, String title, String content, String username, String img, String category, String region, Long price, List<Comment> commentList, Timestamp createAt) {
+    public Article(Long id, String title, String content, String username, String nickname, String img, String category, String region, long price, List<Heart> heartList, List<Comment> commentList, Timestamp createAt) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.username = username;
+        this.nickname = nickname;
         this.img = img;
         this.category = category;
         this.region = region;
         this.price = price;
+        this.heartList = heartList;
         this.commentList = commentList;
         this.createAt = createAt;
     }
+
+
+
 
     public void addComment(Comment comment) {
         commentList.add(comment);

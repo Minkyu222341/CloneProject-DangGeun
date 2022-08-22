@@ -29,12 +29,12 @@ public class ArticleResponseDto {
     private String region;
     private long heartCnt;
     private long commentCnt;
-    private String username;
+    private String nickname;
     private Timestamp createAt;
     private String category;
 
     @Builder
-    public ArticleResponseDto(long id, String img, String title, Long price, String region, long heartCnt, long commentCnt, String username, Timestamp createAt, String category) {
+    public ArticleResponseDto(long id, String img, String title, Long price, String region, long heartCnt, long commentCnt, String nickname, Timestamp createAt, String category) {
         this.id = id;
         this.img = img;
         this.title = title;
@@ -42,7 +42,7 @@ public class ArticleResponseDto {
         this.region = region;
         this.heartCnt = heartCnt;
         this.commentCnt = commentCnt;
-        this.username = username;
+        this.nickname = nickname;
         this.createAt = createAt;
         this.category = category;
     }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.cloneproject.dto.requestDto.KakaoUserInfoDto;
 import com.sparta.cloneproject.dto.responseDto.TokenDto;
+import com.sparta.cloneproject.dto.responseDto.UserInfoResponseDto;
 import com.sparta.cloneproject.jwt.TokenProvider;
 import com.sparta.cloneproject.model.Member;
 import com.sparta.cloneproject.repository.MemberRepository;
@@ -38,7 +39,7 @@ public class KakaoUserService {
     private final MemberRepository memberRepository;
 
 
-    public TokenDto kakaoLogin(String code) throws JsonProcessingException {
+    public UserInfoResponseDto kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
 
         String accessToken = getAccessToken(code);
@@ -51,7 +52,7 @@ public class KakaoUserService {
         System.out.println(kakaoUser + " 유저정보2");
 
         // 4. 강제 로그인 처리
-        TokenDto tokenDto = forceLogin(kakaoUser);
+        UserInfoResponseDto tokenDto = forceLogin(kakaoUser);
 
         return tokenDto;
     }
@@ -159,7 +160,7 @@ public class KakaoUserService {
         return member;
     }
 
-    private TokenDto forceLogin(Member kakaoUser) {
+    private UserInfoResponseDto forceLogin(Member kakaoUser) {
         /**
          *  가입된 유저의 정보를 받아서 authentication 객체를 생성해서 프론트와 통신할 유효한 토큰을 생성하고 SecurityContextHolder에
          *  authentication 객체를 SET 해서 강제로 로그인처리.
@@ -169,6 +170,14 @@ public class KakaoUserService {
         Optional<Member> loginMember = memberRepository.findByUsername(kakaoUser.getUsername());
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return tokenDto;
+        UserInfoResponseDto tokenAndUserInfo = UserInfoResponseDto.builder()
+                .accessToken(tokenDto.getAccessToken())
+                .accessTokenExpiresIn(tokenDto.getAccessTokenExpiresIn())
+                .grantType(tokenDto.getGrantType())
+                .refreshToken(tokenDto.getRefreshToken())
+                .username(loginMember.get().getUsername())
+                .nickname(loginMember.get().getNickname())
+                .build();
+        return tokenAndUserInfo;
     }
 }

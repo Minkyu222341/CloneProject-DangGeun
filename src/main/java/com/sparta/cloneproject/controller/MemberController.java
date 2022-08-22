@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sparta.cloneproject.dto.requestDto.MemberRequestDto;
 import com.sparta.cloneproject.dto.responseDto.MemberResponseDto;
 import com.sparta.cloneproject.dto.responseDto.TokenDto;
+import com.sparta.cloneproject.dto.responseDto.UserInfoResponseDto;
 import com.sparta.cloneproject.model.Member;
 import com.sparta.cloneproject.repository.MemberRepository;
 import com.sparta.cloneproject.service.KakaoUserService;
@@ -24,13 +25,16 @@ public class MemberController {
     private final MemberRepository memberRepository;
 
 
+    /**
+     * 소셜로그인
+     */
     @GetMapping("/user/kakao/callback")
-    public TokenDto kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
-        TokenDto tokenDto = kakaoUserService.kakaoLogin(code);
-        response.setHeader("Authorization", "Bearer " + tokenDto.getAccessToken());
-        response.setHeader("Access-Token-Expire-Time", String.valueOf(tokenDto.getAccessTokenExpiresIn()));
-        System.out.println(tokenDto.getAccessToken() + " JWT엑세스토큰 ");
-        return tokenDto;
+    public UserInfoResponseDto kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+        UserInfoResponseDto tokenAndUserInfo = kakaoUserService.kakaoLogin(code);
+        response.setHeader("Authorization", "Bearer " + tokenAndUserInfo.getAccessToken());
+        response.setHeader("Access-Token-Expire-Time", String.valueOf(tokenAndUserInfo.getAccessTokenExpiresIn()));
+        System.out.println(tokenAndUserInfo.getAccessToken() + " JWT엑세스토큰 ");
+        return tokenAndUserInfo;
     }
 
     @PostMapping("/api/member/signup")
@@ -38,6 +42,10 @@ public class MemberController {
         return ResponseEntity.ok(memberService.signup(memberRequestDto));
     }
 //
+
+    /**
+     * 일반로그인
+     */
     @PostMapping("/api/member/login")
     public Optional<Member> login(@RequestBody MemberRequestDto memberRequestDto, HttpServletResponse response) {
         TokenDto tokenDto = memberService.login(memberRequestDto);

@@ -50,10 +50,9 @@ public class MemberService {
 
     @Transactional
     public TokenDto login(MemberRequestDto memberRequestDto) {
-//        if (!memberRepository.existsByNickname(memberRequestDto.getNickname()) ||
-//                !memberRepository.existsByPassword(passwordEncoder.encode(memberRequestDto.getPassword()))) {
-//            throw new RuntimeException("사용자를 찾을 수 없습니다");
-//        }
+        if (!memberRepository.existsByUsername(memberRequestDto.getUsername())) {
+            throw new RuntimeException("사용자를 찾을 수 없습니다");
+        }
         // 1. Login ID/PW 를 기반으로 AuthenticationToken 생성
         UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
 

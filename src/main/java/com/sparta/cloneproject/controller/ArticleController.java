@@ -6,8 +6,6 @@ import com.sparta.cloneproject.model.Article;
 import com.sparta.cloneproject.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,9 +22,10 @@ public class ArticleController {
     /**
      * 게시글 전체 조회
      */
+//    @AuthenticationPrincipal UserDetails userDetails
     @GetMapping
-    public List<ArticleResponseDto> getArticleList(@AuthenticationPrincipal UserDetails userDetails) {
-        System.out.println(userDetails.getUsername() + " AuthenticationPrincipal");
+    public List<ArticleResponseDto> getArticleList() {
+//        System.out.println(userDetails.getUsername() + " AuthenticationPrincipal");
 //        System.out.println(userDetails.getUsername() + " 유저네임");
         return articleService.getArticleList();
     }
@@ -46,7 +45,7 @@ public class ArticleController {
     //생성은 해당 주소로 post방식으로 들어올것고 그렇게 들어오면 아래를 실행한다.
     public Article creatMemo(@RequestPart(value = "dto") ArticleRequestDto requestDto,
                              @RequestPart(required = false) MultipartFile multipartFile) throws IOException {   //메모를 생성하려면 데이터를 물고다닐 Dto가 필요하다.  // 날아오는 녀석을 그대로 requestDto에 넣어주기 위해서 해당 어노테이션을 씀
-        System.out.println(requestDto.getContent()+"  내용");
+        System.out.println(requestDto.getContent()+"  게시글 작성 컨트롤러");
         return articleService.createArticle(requestDto,multipartFile);
     }
 
