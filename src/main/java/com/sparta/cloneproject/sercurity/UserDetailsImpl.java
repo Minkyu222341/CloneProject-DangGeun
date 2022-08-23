@@ -3,8 +3,10 @@ package com.sparta.cloneproject.sercurity;
 
 import com.sparta.cloneproject.model.Member;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class UserDetailsImpl implements UserDetails {
@@ -15,11 +17,21 @@ public class UserDetailsImpl implements UserDetails {
         this.member = member;
     }
 
+//    @Override // 인가를 해주는 부분
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return Collections.emptyList();
+//    }
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        String authority = "ROLE_USER";
+
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(simpleGrantedAuthority);
+
+        return authorities;
     }
 
     @Override

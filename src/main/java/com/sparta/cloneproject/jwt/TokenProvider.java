@@ -81,22 +81,23 @@ public class TokenProvider {
     // createToken 과 정확히 반대의 역할을 해주는 메소드이다.
     // 토큰을 parameter 로 받아서 토큰으로 claim 을 만들고, 최종적으로는 Authentication 객체를 리턴한다.
     public Authentication getAuthentication(String accessToken) {
+        System.out.println("프로바이더 권한검증");
         // 토큰 복호화
         Claims claims = parseClaims(accessToken);
-
+        System.out.println("claims : "+ claims);
         if (claims.get(AUTHORITIES_KEY) == null) {
+            System.out.println("권한정보가 없음");
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
         }
-
+        System.out.println("권한정보null값 넘어왔음");
         // 클레임에서 권한 정보 가져오기
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-
+        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                                                                .map(SimpleGrantedAuthority::new)
+                                                                .collect(Collectors.toList());
+        System.out.println("권한정보 : "+authorities );
         // UserDetails 객체를 만들어서 Authentication 리턴
         UserDetails principal = new User(claims.getSubject(), "", authorities);
-
+        System.out.println("검증된 객체 리턴 : "+principal.toString());
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
@@ -118,6 +119,7 @@ public class TokenProvider {
 
     private Claims parseClaims(String accessToken) {
         try {
+            System.out.println("parse클레임");
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();

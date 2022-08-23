@@ -7,9 +7,9 @@ import com.sparta.cloneproject.dto.requestDto.KakaoUserInfoDto;
 import com.sparta.cloneproject.dto.responseDto.TokenDto;
 import com.sparta.cloneproject.dto.responseDto.UserInfoResponseDto;
 import com.sparta.cloneproject.jwt.TokenProvider;
+import com.sparta.cloneproject.model.Authority;
 import com.sparta.cloneproject.model.Member;
 import com.sparta.cloneproject.repository.MemberRepository;
-import com.sparta.cloneproject.sercurity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -18,7 +18,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -148,11 +152,13 @@ public class KakaoUserService {
 
             // email: kakao email
             String email = kakaoUserInfo.getEmail();
+
             Member signUp = Member.builder()
                     .kakaoId(id)
                     .username(email)
                     .nickname(username)
                     .password(encodedPassword)
+                    .authority(Authority.ROLE_USER)
                     .build();
             Member signUpMember = userRepository.save(signUp);
             return signUpMember;
@@ -165,7 +171,9 @@ public class KakaoUserService {
          *  가입된 유저의 정보를 받아서 authentication 객체를 생성해서 프론트와 통신할 유효한 토큰을 생성하고 SecurityContextHolder에
          *  authentication 객체를 SET 해서 강제로 로그인처리.
          */
-        UserDetails userDetails = new UserDetailsImpl(kakaoUser);
+        //이부분 수정
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(kakaoUser.getAuthority().toString());
+        UserDetails userDetails = new User(kakaoUser.getUsername(),kakaoUser.getPassword(), Collections.singleton(grantedAuthority));
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         Optional<Member> loginMember = memberRepository.findByUsername(kakaoUser.getUsername());
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
