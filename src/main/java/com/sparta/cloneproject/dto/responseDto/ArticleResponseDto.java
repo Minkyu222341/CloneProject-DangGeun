@@ -1,9 +1,11 @@
 package com.sparta.cloneproject.dto.responseDto;
 
+import com.sparta.cloneproject.model.Img;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Getter
 public class ArticleResponseDto {
@@ -23,7 +25,7 @@ public class ArticleResponseDto {
      * }
      */
     private long id;
-    private String img;
+    private List<Img> img;
     private String title;
     private long price;
     private String region;
@@ -34,7 +36,8 @@ public class ArticleResponseDto {
     private String category;
 
     @Builder
-    public ArticleResponseDto(long id, String img, String title, Long price, String region, long heartCnt, long commentCnt, String nickname, Timestamp createAt, String category) {
+
+    public ArticleResponseDto(long id, List<Img> img, String title, long price, String region, long heartCnt, long commentCnt, String nickname, Timestamp createAt, String category) {
         this.id = id;
         this.img = img;
         this.title = title;

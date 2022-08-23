@@ -43,6 +43,14 @@ public class HeartService {
         return true;
     }
 
+    /**
+     * 좋아요 눌렀는지 여부 확인
+     */
+    
+    
+    
+    
+    
     private Heart getHeart(Optional<Article> article) {
         Heart heart = Heart.builder()
                 .userId(getLoginMember().get().getId())
@@ -50,4 +58,5 @@ public class HeartService {
                 .build();
         return heart;
     }
+
 }

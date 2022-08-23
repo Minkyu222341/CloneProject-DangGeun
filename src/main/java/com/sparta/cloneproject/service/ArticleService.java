@@ -4,10 +4,13 @@ import com.sparta.cloneproject.dto.requestDto.ArticleRequestDto;
 import com.sparta.cloneproject.dto.responseDto.ArticleResponseDto;
 import com.sparta.cloneproject.model.Article;
 import com.sparta.cloneproject.model.DeletedUrlPath;
+import com.sparta.cloneproject.model.Img;
 import com.sparta.cloneproject.model.Member;
 import com.sparta.cloneproject.repository.ArticleRepository;
 import com.sparta.cloneproject.repository.DeletedUrlPathRepository;
+import com.sparta.cloneproject.repository.ImageRepository;
 import com.sparta.cloneproject.repository.MemberRepository;
+import com.sparta.cloneproject.s3.S3Dto;
 import com.sparta.cloneproject.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +31,7 @@ public class ArticleService {
     private final S3Uploader s3Uploader;
     private final DeletedUrlPathRepository deletedUrlPathRepository;
     private final MemberRepository memberRepository;
+    private final ImageRepository imageRepository;
 
     public Optional<Member> getLoginMember() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -58,12 +62,33 @@ public class ArticleService {
     /**
      * 게시글 작성
      */
-    public Article createArticle(ArticleRequestDto requestDto, MultipartFile multipartFile) throws IOException {
+    public Article createArticle(ArticleRequestDto requestDto, List<MultipartFile> multipartFile) throws IOException {
+        List<Img> imgList = new ArrayList<>();
         if (multipartFile != null) {
-            String pathUrl = s3Uploader.upload(multipartFile);
-            Long id = getLoginMember().get().getId();
+            Long userId = getLoginMember().get().getId();
             String nickname = getLoginMember().get().getNickname();
-            Article article = getArticle(requestDto, pathUrl, id,nickname);
+
+            Article article = Article.builder()
+                    .title(requestDto.getTitle())
+                    .content(requestDto.getContent())
+                    .price(requestDto.getPrice())
+                    .category(requestDto.getCategory())
+                    .region(requestDto.getRegion())
+                    .userId(userId)
+                    .nickname(nickname)
+                    .build();
+
+            for (MultipartFile file : multipartFile) {
+                S3Dto upload = s3Uploader.upload(file);
+                Img findImage = Img.builder()
+                        .imgUrl(upload.getUploadImageUrl())
+                        .fileName(upload.getFileName())
+                        .article(article)
+                        .build();
+                imgList.add(findImage);
+                imageRepository.save(findImage);
+            }
+
             articleRepository.save(article);
             return article;
         }
@@ -99,7 +124,7 @@ public class ArticleService {
         }
         // S3버켓에있는 이미지 삭제 관련
         DeletedUrlPath deletedUrlPath = new DeletedUrlPath();
-        deletedUrlPath.setDeletedUrlPath(findArticle.get().getImg());
+//        deletedUrlPath.setDeletedUrlPath(findArticle.get().getImgList());
         deletedUrlPathRepository.save(deletedUrlPath);
 
         articleRepository.deleteById(id);
@@ -123,7 +148,7 @@ public class ArticleService {
             ArticleResponseDto result = ArticleResponseDto.builder()
                     .id(article.getId())
                     .title(article.getTitle())
-                    .img(article.getImg())
+                    .img(article.getImgList())
                     .price(article.getPrice())
                     .region(article.getRegion())
                     .commentCnt(article.getCommentList().size()) // 게시글이 가지고있는 댓글리스트의 size() = 이게 어차피 댓글갯수니까
@@ -141,24 +166,12 @@ public class ArticleService {
                 .category(article.get().getCategory())
                 .region(article.get().getRegion())
                 .createAt(article.get().getCreateAt())
-                .img(article.get().getImg())
+                .img(article.get().getImgList())
                 .price(article.get().getPrice())
                 .build();
         return articleResponseDto;
     }
 
-    private Article getArticle(ArticleRequestDto requestDto, String pathUrl, long userId,String nickname) {
-        Article article = Article.builder()
-                .content(requestDto.getContent())
-                .price(requestDto.getPrice())
-                .category(requestDto.getCategory())
-                .region(requestDto.getRegion())
-                .img(pathUrl)
-                .userId(userId)
-                .nickname(nickname)
-                .build();
-        return article;
-    }
 
     private Article getArticleNotImage(ArticleRequestDto requestDto, long userId,String nickname) {
         Article article = Article.builder()

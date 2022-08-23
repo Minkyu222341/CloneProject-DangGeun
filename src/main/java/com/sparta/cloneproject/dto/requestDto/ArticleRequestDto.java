@@ -21,7 +21,5 @@ public class ArticleRequestDto {
     private long price;
     private String category;
     private String region;
-    private String img;
-
 
 }

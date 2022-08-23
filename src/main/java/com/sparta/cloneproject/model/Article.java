@@ -32,7 +32,10 @@ public class Article {
     //작성자 닉네임
     private String nickname;
     //이미지 
-    private String img;
+//    private String img;
+    @OneToMany(mappedBy = "article",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Img> imgList = new ArrayList<>();
     //카테고리
     private String category;
     //지역
@@ -40,11 +43,11 @@ public class Article {
     //가격
     private long price;
 
-    @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Heart> heartList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "article",cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "article",cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Comment> commentList = new ArrayList<>();
     //작성시간
@@ -59,15 +62,14 @@ public class Article {
         this.region = requestDto.getRegion();
         this.price = requestDto.getPrice();
     }
-
     @Builder
-    public Article(Long id, String title, String content, Long userId, String nickname, String img, String category, String region, long price, List<Heart> heartList, List<Comment> commentList, Timestamp createAt) {
+    public Article(Long id, String title, String content, Long userId, String nickname, List<Img> imgList, String category, String region, long price, List<Heart> heartList, List<Comment> commentList, Timestamp createAt) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.userId = userId;
         this.nickname = nickname;
-        this.img = img;
+        this.imgList = imgList;
         this.category = category;
         this.region = region;
         this.price = price;
@@ -75,6 +77,7 @@ public class Article {
         this.commentList = commentList;
         this.createAt = createAt;
     }
+
 
 
 

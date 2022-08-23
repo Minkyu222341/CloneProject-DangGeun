@@ -45,7 +45,7 @@ public class ArticleController {
     @PostMapping(value = "/auth", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     //생성은 해당 주소로 post방식으로 들어올것고 그렇게 들어오면 아래를 실행한다.
     public Article creatMemo(@RequestPart(value = "dto") ArticleRequestDto requestDto,
-                             @RequestPart(required = false) MultipartFile multipartFile) throws IOException {   //메모를 생성하려면 데이터를 물고다닐 Dto가 필요하다.  // 날아오는 녀석을 그대로 requestDto에 넣어주기 위해서 해당 어노테이션을 씀
+                             @RequestPart(required = false) List<MultipartFile> multipartFile) throws IOException {   //메모를 생성하려면 데이터를 물고다닐 Dto가 필요하다.  // 날아오는 녀석을 그대로 requestDto에 넣어주기 위해서 해당 어노테이션을 씀
         System.out.println(requestDto.getContent()+"  게시글 작성 컨트롤러");
         return articleService.createArticle(requestDto,multipartFile);
     }
