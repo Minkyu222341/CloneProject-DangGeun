@@ -6,12 +6,10 @@ import com.sparta.cloneproject.model.Article;
 import com.sparta.cloneproject.model.DeletedUrlPath;
 import com.sparta.cloneproject.model.Img;
 import com.sparta.cloneproject.model.Member;
-import com.sparta.cloneproject.repository.ArticleRepository;
-import com.sparta.cloneproject.repository.DeletedUrlPathRepository;
-import com.sparta.cloneproject.repository.ImageRepository;
-import com.sparta.cloneproject.repository.MemberRepository;
+import com.sparta.cloneproject.repository.*;
 import com.sparta.cloneproject.s3.S3Dto;
 import com.sparta.cloneproject.s3.S3Uploader;
+import com.sparta.cloneproject.util.TimeCustom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,11 +30,13 @@ public class ArticleService {
     private final DeletedUrlPathRepository deletedUrlPathRepository;
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
-
+    private final HeartRepository heartRepository;
+    private final TimeCustom timeCustom;
     public Optional<Member> getLoginMember() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         return memberRepository.findByUsername(userId);
     }
+
 
     /**
      * 전체 게시글 조회
@@ -45,8 +45,29 @@ public class ArticleService {
      */
     public List<ArticleResponseDto> getArticleList() {
         List<Article> articleList = articleRepository.findAll();
+
         List<ArticleResponseDto> articleResponseDto = new ArrayList<>();
-        responseAllArticle(articleList, articleResponseDto);
+        for (Article article : articleList) {
+            if(getLoginMember().isPresent()) {
+                if (heartRepository.existsByArticleAndUserId(article,getLoginMember().get().getId())) {
+                    article.setIsLike(true);
+                } else {
+                    article.setIsLike(false);
+                }
+            }
+            ArticleResponseDto result = ArticleResponseDto.builder()
+                    .id(article.getId())
+                    .title(article.getTitle())
+                    .img(article.getImgList())
+                    .price(article.getPrice())
+                    .region(article.getRegion())
+                    .commentCnt(article.getCommentList().size())
+                    .heartCnt(article.getHeartList().size())
+                    .isLike(article.getIsLike())
+                    .build();
+
+            articleResponseDto.add(result);
+        }
         return articleResponseDto;
     }
 
@@ -54,8 +75,25 @@ public class ArticleService {
      * 상세 게시글 조회
      */
     public ArticleResponseDto getDetail(Long id) {
-        final Optional<Article> article = articleRepository.findById(id);
-        ArticleResponseDto articleResponseDto = responseDetail(article);
+        Optional<Article> article = articleRepository.findById(id);
+        if(getLoginMember().isPresent()) {
+            if (heartRepository.existsByArticleAndUserId(article.get(), getLoginMember().get().getId())) {
+                article.get().setIsLike(true);
+            } else {
+                article.get().setIsLike(false);
+            }
+        }
+
+        ArticleResponseDto articleResponseDto = ArticleResponseDto.builder()
+                .title(article.get().getTitle())
+                .nickname(article.get().getNickname())
+                .category(article.get().getCategory())
+                .region(article.get().getRegion())
+                .createAt(timeCustom.customTime(article.get().getCreateAt()))
+                .img(article.get().getImgList())
+                .price(article.get().getPrice())
+                .isLike(article.get().getIsLike())
+                .build();
         return articleResponseDto;
     }
 
@@ -76,6 +114,7 @@ public class ArticleService {
                     .region(requestDto.getRegion())
                     .userId(userId)
                     .nickname(nickname)
+                    .isLike(false)
                     .build();
 
             for (MultipartFile file : multipartFile) {
@@ -143,36 +182,6 @@ public class ArticleService {
     }
 
 
-    private void responseAllArticle(List<Article> articleList, List<ArticleResponseDto> articleResponseDto) {
-        for (Article article : articleList) {
-            ArticleResponseDto result = ArticleResponseDto.builder()
-                    .id(article.getId())
-                    .title(article.getTitle())
-                    .img(article.getImgList())
-                    .price(article.getPrice())
-                    .region(article.getRegion())
-                    .commentCnt(article.getCommentList().size()) // 게시글이 가지고있는 댓글리스트의 size() = 이게 어차피 댓글갯수니까
-                    .heartCnt(article.getHeartList().size())
-                    .build();
-
-            articleResponseDto.add(result);
-        }
-    }
-
-    private ArticleResponseDto responseDetail(Optional<Article> article) {
-        ArticleResponseDto articleResponseDto = ArticleResponseDto.builder()
-                .title(article.get().getTitle())
-                .nickname(article.get().getNickname())
-                .category(article.get().getCategory())
-                .region(article.get().getRegion())
-                .createAt(article.get().getCreateAt())
-                .img(article.get().getImgList())
-                .price(article.get().getPrice())
-                .build();
-        return articleResponseDto;
-    }
-
-
     private Article getArticleNotImage(ArticleRequestDto requestDto, long userId,String nickname) {
         Article article = Article.builder()
                 .content(requestDto.getContent())
@@ -181,6 +190,7 @@ public class ArticleService {
                 .region(requestDto.getRegion())
                 .userId(userId)
                 .nickname(nickname)
+                .isLike(false)
                 .build();
         return article;
     }

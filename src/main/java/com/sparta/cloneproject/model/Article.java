@@ -6,6 +6,7 @@ import com.sparta.cloneproject.dto.requestDto.ArticleRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -17,6 +18,7 @@ import java.util.Optional;
 @Getter
 @Entity
 @NoArgsConstructor
+@Setter
 public class Article {
 
     @Id
@@ -43,6 +45,8 @@ public class Article {
     //가격
     private long price;
 
+    private Boolean isLike;
+
     @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Heart> heartList = new ArrayList<>();
@@ -63,7 +67,7 @@ public class Article {
         this.price = requestDto.getPrice();
     }
     @Builder
-    public Article(Long id, String title, String content, Long userId, String nickname, List<Img> imgList, String category, String region, long price, List<Heart> heartList, List<Comment> commentList, Timestamp createAt) {
+    public Article(Long id, String title, String content, Long userId, String nickname, List<Img> imgList, String category, String region, long price, List<Heart> heartList, List<Comment> commentList, Timestamp createAt,Boolean isLike) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -76,6 +80,7 @@ public class Article {
         this.heartList = heartList;
         this.commentList = commentList;
         this.createAt = createAt;
+        this.isLike = isLike;
     }
 
 

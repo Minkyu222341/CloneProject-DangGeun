@@ -8,6 +8,7 @@ import com.sparta.cloneproject.model.Member;
 import com.sparta.cloneproject.repository.ArticleRepository;
 import com.sparta.cloneproject.repository.CommentRepository;
 import com.sparta.cloneproject.repository.MemberRepository;
+import com.sparta.cloneproject.util.TimeCustom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ArticleRepository articleRepository;
     private final MemberRepository memberRepository;
+    private final TimeCustom timeCustom;
 
     public Optional<Member> getLoginMember() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -43,6 +45,8 @@ public class CommentService {
                     .content(comment.getContent())
                     .id(comment.getId())
                     .nickname(comment.getNickname())
+                    .username(comment.getUsername())
+                    .creatAt(timeCustom.customTime(comment.getCreateAt()))
                     .build();
             responseDtos.add(buildComment);
         }
@@ -95,7 +99,9 @@ public class CommentService {
                 .content(commentRequestDto.getContent())
                 .userId(getLoginMember().get().getId())
                 .nickname(getLoginMember().get().getNickname())
+                .username(getLoginMember().get().getUsername())
                 .build();
+
         return comment;
     }
 }

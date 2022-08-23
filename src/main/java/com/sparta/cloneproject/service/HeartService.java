@@ -42,12 +42,6 @@ public class HeartService {
         heartRepository.save(heart);
         return true;
     }
-
-    /**
-     * 좋아요 눌렀는지 여부 확인
-     */
-    
-    
     
     
     

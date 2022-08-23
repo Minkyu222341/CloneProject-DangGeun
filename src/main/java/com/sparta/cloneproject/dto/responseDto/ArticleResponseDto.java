@@ -4,7 +4,6 @@ import com.sparta.cloneproject.model.Img;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 @Getter
@@ -32,12 +31,12 @@ public class ArticleResponseDto {
     private long heartCnt;
     private long commentCnt;
     private String nickname;
-    private Timestamp createAt;
+    private String createAt;
     private String category;
+    private boolean isLike;
 
     @Builder
-
-    public ArticleResponseDto(long id, List<Img> img, String title, long price, String region, long heartCnt, long commentCnt, String nickname, Timestamp createAt, String category) {
+    public ArticleResponseDto(long id, List<Img> img, String title, long price, String region, long heartCnt, long commentCnt, String nickname, String createAt, String category, boolean isLike) {
         this.id = id;
         this.img = img;
         this.title = title;
@@ -48,5 +47,6 @@ public class ArticleResponseDto {
         this.nickname = nickname;
         this.createAt = createAt;
         this.category = category;
+        this.isLike = isLike;
     }
 }
