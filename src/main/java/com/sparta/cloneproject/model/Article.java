@@ -59,6 +59,7 @@ public class Article {
     private Timestamp createAt;
 
 
+
     public void update(ArticleRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();

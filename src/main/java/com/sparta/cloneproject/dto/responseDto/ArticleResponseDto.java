@@ -21,6 +21,7 @@ public class ArticleResponseDto {
      * “username”: ”아이디”,
      * “category”: ”뷰티용품”,
      * “createAt”: ”3분전”
+     * "content" : "내용"
      * }
      */
     private long id;
@@ -34,9 +35,11 @@ public class ArticleResponseDto {
     private String createAt;
     private String category;
     private boolean isLike;
+    private String username;
+    private String content;
 
     @Builder
-    public ArticleResponseDto(long id, List<Img> img, String title, long price, String region, long heartCnt, long commentCnt, String nickname, String createAt, String category, boolean isLike) {
+    public ArticleResponseDto(long id, List<Img> img, String title, long price, String region, long heartCnt, long commentCnt, String nickname, String createAt, String category, boolean isLike,String username,String content) {
         this.id = id;
         this.img = img;
         this.title = title;
@@ -48,5 +51,8 @@ public class ArticleResponseDto {
         this.createAt = createAt;
         this.category = category;
         this.isLike = isLike;
+        this.username = username;
+        this.content = content;
+
     }
 }

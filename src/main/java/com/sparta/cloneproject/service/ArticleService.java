@@ -76,6 +76,7 @@ public class ArticleService {
      */
     public ArticleResponseDto getDetail(Long id) {
         Optional<Article> article = articleRepository.findById(id);
+        Optional<Member> author = memberRepository.findById(article.get().getUserId());
         if(getLoginMember().isPresent()) {
             if (heartRepository.existsByArticleAndUserId(article.get(), getLoginMember().get().getId())) {
                 article.get().setIsLike(true);
@@ -93,6 +94,10 @@ public class ArticleService {
                 .img(article.get().getImgList())
                 .price(article.get().getPrice())
                 .isLike(article.get().getIsLike())
+                .content(article.get().getContent())
+                .commentCnt(article.get().getCommentList().size())
+                .heartCnt(article.get().getHeartList().size())
+                .username(author.get().getUsername())
                 .build();
         return articleResponseDto;
     }
@@ -105,7 +110,6 @@ public class ArticleService {
         if (multipartFile != null) {
             Long userId = getLoginMember().get().getId();
             String nickname = getLoginMember().get().getNickname();
-
             Article article = Article.builder()
                     .title(requestDto.getTitle())
                     .content(requestDto.getContent())
