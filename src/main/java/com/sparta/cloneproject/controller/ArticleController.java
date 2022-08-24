@@ -2,6 +2,7 @@ package com.sparta.cloneproject.controller;
 
 import com.sparta.cloneproject.dto.requestDto.ArticleRequestDto;
 import com.sparta.cloneproject.dto.responseDto.ArticleResponseDto;
+import com.sparta.cloneproject.dto.responseDto.SearchResponseDto;
 import com.sparta.cloneproject.model.Article;
 import com.sparta.cloneproject.service.ArticleService;
 import lombok.RequiredArgsConstructor;
@@ -80,7 +81,7 @@ public class ArticleController {
      * 카테고리 조회
      */
     @GetMapping("/search")
-    public List<Article> searchCategory(@RequestParam(required = false) String region,@RequestParam(required = false) String category) {
+    public List<SearchResponseDto> searchCategory(@RequestParam(required = false) String region, @RequestParam(required = false) String category) {
         System.out.println("지역 : "+region);
         System.out.println("카테고리 : "+category);
         System.out.println("검색컨트롤러");

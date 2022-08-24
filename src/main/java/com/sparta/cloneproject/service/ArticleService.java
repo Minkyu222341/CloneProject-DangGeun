@@ -197,7 +197,7 @@ public class ArticleService {
     /**
      * 카데고리 조회
      */
-    public List<Article> searchCategory(String region,String category) {
+    public List<SearchResponseDto> searchCategory(String region,String category) {
         System.out.println("지역 : "+region);
         System.out.println("카테고리 : "+category);
         return articleRepository.searchAll(region,category);

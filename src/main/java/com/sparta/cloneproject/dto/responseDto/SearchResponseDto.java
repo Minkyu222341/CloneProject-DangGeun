@@ -1,15 +1,15 @@
 package com.sparta.cloneproject.dto.responseDto;
 
-import com.querydsl.core.annotations.QueryProjection;
 import com.sparta.cloneproject.model.Img;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.util.List;
 
-@Data
 @NoArgsConstructor
+@Getter
 public class SearchResponseDto {
     private Long id;
 
@@ -23,11 +23,12 @@ public class SearchResponseDto {
 
     private List<Img> imgList;
 
-    @QueryProjection
+    private long heartCnt;
+    private long commentCnt;
 
-    public SearchResponseDto(Long id,  String title, Long price, String region, String category, Timestamp createAt, Boolean isLike,List<Img> imgList) {
+    @Builder
+    public SearchResponseDto(Long id, String title, Long price, String region, String category, Timestamp createAt, Boolean isLike, List<Img> imgList, long heartCnt, long commentCnt) {
         this.id = id;
-
         this.title = title;
         this.price = price;
         this.region = region;
@@ -35,5 +36,7 @@ public class SearchResponseDto {
         this.createAt = createAt;
         this.isLike = isLike;
         this.imgList = imgList;
+        this.heartCnt = heartCnt;
+        this.commentCnt = commentCnt;
     }
 }

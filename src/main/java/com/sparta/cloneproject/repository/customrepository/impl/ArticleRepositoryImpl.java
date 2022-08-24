@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.sparta.cloneproject.model.QArticle.article;
@@ -45,14 +46,32 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     }
 
     @Override
-    public List<Article> searchAll(String region, String category) {
+    public List<SearchResponseDto> searchAll(String region, String category) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
         List<Article> fetch = queryFactory
                 .selectFrom(article)
                 .where(categoryEq(category),
                         regionEq(region))
                 .fetch();
-        return fetch;
+
+        List<SearchResponseDto> dtoList = new ArrayList<>();
+
+        for (Article article : fetch) {
+            dtoList.add(SearchResponseDto.builder()
+                    .id(article.getId())
+                    .title(article.getTitle())
+                    .price(article.getPrice())
+                    .region(article.getRegion())
+                    .category(article.getCategory())
+                    .createAt(article.getCreateAt())
+                    .isLike(article.getIsLike())
+                    .imgList(article.getImgList())
+                    .heartCnt(article.getCommentList().size())
+                    .commentCnt(article.getHeartList().size())
+                    .build());
+        }
+
+        return dtoList;
     }
 
 
