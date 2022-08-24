@@ -2,10 +2,10 @@ package com.sparta.cloneproject.repository.customrepository.impl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sparta.cloneproject.dto.responseDto.QSearchResponseDto;
 import com.sparta.cloneproject.dto.responseDto.SearchResponseDto;
 import com.sparta.cloneproject.model.Article;
 import com.sparta.cloneproject.repository.customrepository.ArticleRepositoryCustom;
+import com.sparta.cloneproject.util.TimeCustom;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.EntityManager;
@@ -20,33 +20,13 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
     @PersistenceContext
     EntityManager em;
-//    JPAQueryFactory queryFactory ;
+    private final TimeCustom timeCustom;
 
+    /**
+     * 카테고리 검색기능
+     */
     @Override
     public List<SearchResponseDto> search(String region, String category) {
-        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
-
-        List<SearchResponseDto> fetch = queryFactory
-                .select(new QSearchResponseDto(
-                        article.id,
-                        article.title,
-                        article.price,
-                        article.region,
-                        article.category,
-                        article.createAt,
-                        article.isLike,
-                        article.imgList))
-                .from(article)
-                .where(categoryEq(category),
-                        regionEq(region))
-                .fetch();
-
-
-        return fetch;
-    }
-
-    @Override
-    public List<SearchResponseDto> searchAll(String region, String category) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
         List<Article> fetch = queryFactory
                 .selectFrom(article)
@@ -63,7 +43,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                     .price(article.getPrice())
                     .region(article.getRegion())
                     .category(article.getCategory())
-                    .createAt(article.getCreateAt())
+                    .createAt(timeCustom.customTime(article.getCreateAt()))
                     .isLike(article.getIsLike())
                     .imgList(article.getImgList())
                     .heartCnt(article.getCommentList().size())
@@ -73,6 +53,11 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
         return dtoList;
     }
+
+
+
+
+
 
 
     private BooleanExpression regionEq(String region) {

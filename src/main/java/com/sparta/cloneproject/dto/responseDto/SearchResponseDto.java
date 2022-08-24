@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 @NoArgsConstructor
@@ -18,7 +17,7 @@ public class SearchResponseDto {
     private String region;
     private String category;
 
-    private Timestamp createAt;
+    private String createAt;
     private Boolean isLike;
 
     private List<Img> imgList;
@@ -27,7 +26,7 @@ public class SearchResponseDto {
     private long commentCnt;
 
     @Builder
-    public SearchResponseDto(Long id, String title, Long price, String region, String category, Timestamp createAt, Boolean isLike, List<Img> imgList, long heartCnt, long commentCnt) {
+    public SearchResponseDto(Long id, String title, Long price, String region, String category, String createAt, Boolean isLike, List<Img> imgList, long heartCnt, long commentCnt) {
         this.id = id;
         this.title = title;
         this.price = price;

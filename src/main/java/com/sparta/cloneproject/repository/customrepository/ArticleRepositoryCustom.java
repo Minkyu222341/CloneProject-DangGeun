@@ -7,6 +7,5 @@ import java.util.List;
 public interface ArticleRepositoryCustom {
 
     List<SearchResponseDto> search(String region,String category);
-    List<SearchResponseDto> searchAll(String region, String category);
 
 }

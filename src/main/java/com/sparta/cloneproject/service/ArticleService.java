@@ -200,6 +200,6 @@ public class ArticleService {
     public List<SearchResponseDto> searchCategory(String region,String category) {
         System.out.println("지역 : "+region);
         System.out.println("카테고리 : "+category);
-        return articleRepository.searchAll(region,category);
+        return articleRepository.search(region,category);
     }
 }
