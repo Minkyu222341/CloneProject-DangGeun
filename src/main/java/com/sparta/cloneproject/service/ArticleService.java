@@ -12,6 +12,8 @@ import com.sparta.cloneproject.s3.S3Dto;
 import com.sparta.cloneproject.s3.S3Uploader;
 import com.sparta.cloneproject.util.TimeCustom;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +75,14 @@ public class ArticleService {
     }
 
     /**
+     * 게시글 조회 - 무한스크롤
+     */
+    public Slice<ArticleResponseDto> getSearchScroll(Pageable pageable,String category,String region) {
+        return articleRepository.searchScroll(pageable,category,region);
+    }
+
+
+    /**
      * 상세 게시글 조회
      */
     public ArticleResponseDto getDetail(Long id) {
@@ -102,6 +112,7 @@ public class ArticleService {
                 .build();
         return articleResponseDto;
     }
+
 
     /**
      * 게시글 작성
@@ -202,4 +213,6 @@ public class ArticleService {
         System.out.println("카테고리 : "+category);
         return articleRepository.search(region,category);
     }
+
+
 }

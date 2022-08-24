@@ -1,12 +1,17 @@
 package com.sparta.cloneproject.repository.customrepository.impl;
 
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sparta.cloneproject.dto.responseDto.ArticleResponseDto;
 import com.sparta.cloneproject.dto.responseDto.SearchResponseDto;
 import com.sparta.cloneproject.model.Article;
 import com.sparta.cloneproject.repository.customrepository.ArticleRepositoryCustom;
 import com.sparta.cloneproject.util.TimeCustom;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -46,27 +51,59 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                     .createAt(timeCustom.customTime(article.getCreateAt()))
                     .isLike(article.getIsLike())
                     .imgList(article.getImgList())
-                    .heartCnt(article.getCommentList().size())
-                    .commentCnt(article.getHeartList().size())
+                    .heartCnt(article.getHeartList().size())
+                    .commentCnt(article.getCommentList().size())
                     .build());
         }
 
         return dtoList;
     }
 
+    /**
+     * 무한스크롤
+     */
+    @Override
+    public Slice<ArticleResponseDto> searchScroll(Pageable pageable,String category,String region) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+        QueryResults<Article> result = queryFactory
+                .selectFrom(article)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .orderBy(article.id.desc())
+                .where(categoryEq(category),
+                        regionEq(region))
+                .fetchResults();
 
+        List<ArticleResponseDto> dto = new ArrayList<>();
 
-
-
+        for (Article article : result.getResults()) {
+            dto.add(ArticleResponseDto.builder()
+                    .id(article.getId())
+                    .title(article.getTitle())
+                    .price(article.getPrice())
+                    .region(article.getRegion())
+                    .category(article.getCategory())
+                    .createAt(timeCustom.customTime(article.getCreateAt()))
+                    .isLike(article.getIsLike())
+                    .img(article.getImgList())
+                    .heartCnt(article.getCommentList().size())
+                    .commentCnt(article.getHeartList().size())
+                    .build());
+        }
+        boolean hasNext = false;
+        if (dto.size() > pageable.getPageSize()) {
+            dto.remove(pageable.getPageSize());
+            hasNext = true;
+        }
+        return new SliceImpl<>(dto, pageable, hasNext);
+    }
 
 
     private BooleanExpression regionEq(String region) {
-        System.out.println("지역비교");
         return region != null ? article.region.eq(region) : null;
     }
 
     private BooleanExpression categoryEq(String category) {
-        System.out.println("카테고리비교");
         return category != null ? article.category.eq(category) : null;
     }
 

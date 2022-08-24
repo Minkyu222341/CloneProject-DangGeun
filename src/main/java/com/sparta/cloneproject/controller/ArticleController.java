@@ -6,6 +6,8 @@ import com.sparta.cloneproject.dto.responseDto.SearchResponseDto;
 import com.sparta.cloneproject.model.Article;
 import com.sparta.cloneproject.service.ArticleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,17 +23,22 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
+//    /**
+//     * 게시글 전체 조회
+//     */
+//    @GetMapping
+//    public List<ArticleResponseDto> getArticleList() {
+//        return articleService.getArticleList();
+//    }
     /**
-     * 게시글 전체 조회
+     * 게시글 전체 조회 - 무한 스크롤
      */
-//    @AuthenticationPrincipal UserDetails userDetails
     @GetMapping
-    public List<ArticleResponseDto> getArticleList() {
-//        System.out.println(userDetails.getUsername() + " AuthenticationPrincipal");
-//        System.out.println(userDetails.getUsername() + " 유저네임");
-        return articleService.getArticleList();
+    public Slice<ArticleResponseDto> getArticleList(Pageable pageable,String category,String region) {
+        return articleService.getSearchScroll(pageable,category,region);
     }
-//    @AuthenticationPrincipal UserDetailsImpl userDetails
+
+    
     /**
      * 게시글 상세 페이지 조회
      */
