@@ -58,6 +58,14 @@ public class ArticleController {
         System.out.println(requestDto.getPrice());
         return articleService.updateArticle(id,requestDto);
     }
+//    /**
+//     * 게시글 수정
+//     */
+//    @PatchMapping("/auth/{id}")
+//    public Article updateArticle(@PathVariable Long id,@RequestPart(value = "dto") ArticleRequestDto requestDto,
+//                                 @RequestPart(required = false) List<MultipartFile> multipartFile)throws IOException {
+//        return articleService.updateArticle(id,requestDto,multipartFiles);
+//    }
 
 
     /**
@@ -66,6 +74,17 @@ public class ArticleController {
     @DeleteMapping("/auth/{id}")
     public boolean deleteArticle(@PathVariable Long id) {
         return articleService.delete(id);
+    }
+
+    /**
+     * 카테고리 조회
+     */
+    @GetMapping("/search")
+    public List<Article> searchCategory(@RequestParam(required = false) String region,@RequestParam(required = false) String category) {
+        System.out.println("지역 : "+region);
+        System.out.println("카테고리 : "+category);
+        System.out.println("검색컨트롤러");
+        return articleService.searchCategory(region,category);
     }
 
 

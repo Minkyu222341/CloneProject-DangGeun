@@ -28,7 +28,6 @@ public class Member {
     private Authority authority;
 
 
-
     @Builder
 
     public Member(Long id, String username, String password, String nickname, Long kakaoId, Authority authority) {

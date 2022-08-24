@@ -43,7 +43,7 @@ public class Article {
     //지역
     private String region;
     //가격
-    private long price;
+    private Long price;
 
     private Boolean isLike;
 
@@ -68,7 +68,7 @@ public class Article {
         this.price = requestDto.getPrice();
     }
     @Builder
-    public Article(Long id, String title, String content, Long userId, String nickname, List<Img> imgList, String category, String region, long price, List<Heart> heartList, List<Comment> commentList, Timestamp createAt,Boolean isLike) {
+    public Article(Long id, String title, String content, Long userId, String nickname, List<Img> imgList, String category, String region, Long price, List<Heart> heartList, List<Comment> commentList, Timestamp createAt,Boolean isLike) {
         this.id = id;
         this.title = title;
         this.content = content;

@@ -53,6 +53,7 @@ public class ArticleResponseDto {
         this.isLike = isLike;
         this.username = username;
         this.content = content;
-
     }
+
+
 }

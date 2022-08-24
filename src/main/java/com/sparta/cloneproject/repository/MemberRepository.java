@@ -1,5 +1,6 @@
 package com.sparta.cloneproject.repository;
 
+
 import com.sparta.cloneproject.model.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 

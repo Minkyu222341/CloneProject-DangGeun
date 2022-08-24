@@ -2,6 +2,7 @@ package com.sparta.cloneproject.service;
 
 import com.sparta.cloneproject.dto.requestDto.ArticleRequestDto;
 import com.sparta.cloneproject.dto.responseDto.ArticleResponseDto;
+import com.sparta.cloneproject.dto.responseDto.SearchResponseDto;
 import com.sparta.cloneproject.model.Article;
 import com.sparta.cloneproject.model.DeletedUrlPath;
 import com.sparta.cloneproject.model.Img;
@@ -135,9 +136,17 @@ public class ArticleService {
             articleRepository.save(article);
             return article;
         }
-        Long id = getLoginMember().get().getId();
+        Long userId = getLoginMember().get().getId();
         String nickname = getLoginMember().get().getNickname();
-        Article article = getArticleNotImage(requestDto, id,nickname);
+        Article article = Article.builder()
+                .content(requestDto.getContent())
+                .price(requestDto.getPrice())
+                .category(requestDto.getCategory())
+                .region(requestDto.getRegion())
+                .userId(userId)
+                .nickname(nickname)
+                .isLike(false)
+                .build();
         articleRepository.save(article);
         return article;
     }
@@ -185,18 +194,12 @@ public class ArticleService {
         deletedUrlPathRepository.deleteAll();
     }
 
-
-    private Article getArticleNotImage(ArticleRequestDto requestDto, long userId,String nickname) {
-        Article article = Article.builder()
-                .content(requestDto.getContent())
-                .price(requestDto.getPrice())
-                .category(requestDto.getCategory())
-                .region(requestDto.getRegion())
-                .userId(userId)
-                .nickname(nickname)
-                .isLike(false)
-                .build();
-        return article;
+    /**
+     * 카데고리 조회
+     */
+    public List<Article> searchCategory(String region,String category) {
+        System.out.println("지역 : "+region);
+        System.out.println("카테고리 : "+category);
+        return articleRepository.searchAll(region,category);
     }
-
 }

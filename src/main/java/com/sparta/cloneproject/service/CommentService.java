@@ -38,7 +38,7 @@ public class CommentService {
      */
     public List<CommentResponseDto> getComment(Long id) {
         Optional<Article> article = articleRepository.findById(id);
-        final List<Comment> commentList = commentRepository.findByArticle(article.get());
+        final List<Comment> commentList = commentRepository.findByArticleOrderByCreateAtDesc(article.get());
         List<CommentResponseDto> responseDtos = new ArrayList<>();
         for (Comment comment : commentList) {
             CommentResponseDto buildComment = CommentResponseDto.builder()

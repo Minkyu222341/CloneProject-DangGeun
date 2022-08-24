@@ -18,7 +18,7 @@ public class ArticleRequestDto {
      */
     private String title;
     private String content;
-    private long price;
+    private Long price;
     private String category;
     private String region;
 
