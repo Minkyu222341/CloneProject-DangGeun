@@ -72,8 +72,8 @@ public class KakaoUserService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "f072c106f2f26c3921bee727b2df0ccd");
-//        body.add("redirect_uri", "http://www.sparta99.com/user/kakao/callback");
-        body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
+//        body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
+        body.add("redirect_uri","https://carrot-market-smoky-seven.vercel.app/user/kakao/callback");
         body.add("code", code);
         /**
          * 받은 인가코드로 카카오에 엑세스토큰 요청
@@ -127,11 +127,11 @@ public class KakaoUserService {
         Long id = jsonNode.get("id").asLong();
         String nickname = jsonNode.get("properties")
                 .get("nickname").asText();
-        String email = jsonNode.get("kakao_account")
-                .get("email").asText();
+//        Optional<String> email = Optional.ofNullable(jsonNode.get("kakao_account")
+//                .get("email").asText());
 
-        System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
-        return new KakaoUserInfoDto(id, nickname, email);
+//        System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + email.get());
+        return new KakaoUserInfoDto(id, nickname);
     }
 
     private Member registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
@@ -151,11 +151,11 @@ public class KakaoUserService {
             String encodedPassword = passwordEncoder.encode(password);
 
             // email: kakao email
-            String email = kakaoUserInfo.getEmail();
+//            Optional<String> email = Optional.ofNullable(kakaoUserInfo.getEmail());
 
             Member signUp = Member.builder()
                     .kakaoId(id)
-                    .username(email)
+//                    .username(email.get())
                     .nickname(username)
                     .password(encodedPassword)
                     .authority(Authority.ROLE_USER)
@@ -171,19 +171,22 @@ public class KakaoUserService {
          *  가입된 유저의 정보를 받아서 authentication 객체를 생성해서 프론트와 통신할 유효한 토큰을 생성하고 SecurityContextHolder에
          *  authentication 객체를 SET 해서 강제로 로그인처리.
          */
-        //이부분 수정
+        //이부분 수정 소셜로그인 유저의 권한이 자꾸 null로 찍혀서 가입이 안됨
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(kakaoUser.getAuthority().toString());
         UserDetails userDetails = new User(kakaoUser.getUsername(),kakaoUser.getPassword(), Collections.singleton(grantedAuthority));
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         Optional<Member> loginMember = memberRepository.findByUsername(kakaoUser.getUsername());
+        //토큰생성
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
+        //로그인이 실제로 일어나는 부분
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserInfoResponseDto tokenAndUserInfo = UserInfoResponseDto.builder()
+                .id(loginMember.get().getId())
                 .accessToken(tokenDto.getAccessToken())
                 .accessTokenExpiresIn(tokenDto.getAccessTokenExpiresIn())
                 .grantType(tokenDto.getGrantType())
                 .refreshToken(tokenDto.getRefreshToken())
-                .username(loginMember.get().getUsername())
+//                .username(loginMember.get().getUsername())
                 .nickname(loginMember.get().getNickname())
                 .build();
         return tokenAndUserInfo;

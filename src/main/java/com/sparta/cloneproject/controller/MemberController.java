@@ -48,11 +48,13 @@ public class MemberController {
      * 일반로그인
      */
     @PostMapping("/api/member/login")
-    public Optional<Member> login(@RequestBody MemberRequestDto memberRequestDto, HttpServletResponse response) {
+    public Long login(@RequestBody MemberRequestDto memberRequestDto, HttpServletResponse response) {
         TokenDto tokenDto = memberService.login(memberRequestDto);
         response.setHeader("Authorization", "Bearer " + tokenDto.getAccessToken());
         response.setHeader("Refresh-Token", tokenDto.getRefreshToken());
         response.setHeader("Access-Token-Expire-Time", String.valueOf(tokenDto.getAccessTokenExpiresIn()));
-        return memberRepository.findByUsername(memberRequestDto.getUsername());
+        Optional<Member> byUsername = memberRepository.findByUsername(memberRequestDto.getUsername());
+        return byUsername.get().getId();
+
     }
 }

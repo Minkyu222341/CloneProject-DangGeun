@@ -44,10 +44,12 @@ public class CommentService {
             CommentResponseDto buildComment = CommentResponseDto.builder()
                     .content(comment.getContent())
                     .id(comment.getId())
+                    .userId(comment.getUserId())
                     .nickname(comment.getNickname())
                     .username(comment.getUsername())
                     .creatAt(timeCustom.customTime(comment.getCreateAt()))
                     .build();
+
             responseDtos.add(buildComment);
         }
         return responseDtos;

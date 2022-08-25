@@ -29,12 +29,13 @@ public class ArticleController {
 //    public List<ArticleResponseDto> getArticleList() {
 //        return articleService.getArticleList();
 //    }
+
     /**
      * 게시글 전체 조회 - 무한 스크롤 , 카테고리 검색
      */
     @GetMapping
-    public Slice<ArticleResponseDto> getArticleList(Pageable pageable,String category,String region) {
-        return articleService.getSearchScroll(pageable,category,region);
+    public Slice<ArticleResponseDto> getArticleList(Pageable pageable, String category, String region) {
+        return articleService.getSearchScroll(pageable, category, region);
     }
 
     
@@ -43,7 +44,7 @@ public class ArticleController {
      */
     @GetMapping("/{id}")
     private ArticleResponseDto getDetail(@PathVariable Long id) {
-        return articleService.getDetail(id);
+        return  articleService.getDetail(id);
     }
 
     /**

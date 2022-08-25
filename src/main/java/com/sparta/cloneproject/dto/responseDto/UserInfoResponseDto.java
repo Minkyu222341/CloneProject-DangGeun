@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class UserInfoResponseDto {
+    private Long id;
     private String grantType;
     private String accessToken;
     private String refreshToken;
@@ -13,7 +14,8 @@ public class UserInfoResponseDto {
     private String username;
 
     @Builder
-    public UserInfoResponseDto(String grantType, String accessToken, String refreshToken, Long accessTokenExpiresIn, String nickname, String username) {
+    public UserInfoResponseDto(Long id,String grantType, String accessToken, String refreshToken, Long accessTokenExpiresIn, String nickname, String username) {
+        this.id = id;
         this.grantType = grantType;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;

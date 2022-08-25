@@ -43,6 +43,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
         for (Article article : fetch) {
             dtoList.add(SearchResponseDto.builder()
+                    .userId(article.getUserId())
                     .id(article.getId())
                     .title(article.getTitle())
                     .price(article.getPrice())
@@ -78,6 +79,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
         for (Article article : result.getResults()) {
             dto.add(ArticleResponseDto.builder()
+                    .userId(article.getUserId())
                     .id(article.getId())
                     .title(article.getTitle())
                     .price(article.getPrice())
@@ -108,7 +110,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         } else if (region == "") {
             return null;
         }
-        return article.region.eq(region);
+        return article.region.like(region);
     }
 
     private BooleanExpression categoryEq(String category) {
@@ -117,7 +119,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         } else if (category == "") {
             return null;
         }
-        return article.category.eq(category);
+        return article.category.like(category);
     }
 
 }

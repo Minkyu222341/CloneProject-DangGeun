@@ -24,6 +24,7 @@ public class ArticleResponseDto {
      * "content" : "내용"
      * }
      */
+    private Long userId;
     private long id;
     private List<Img> img;
     private String title;
@@ -39,7 +40,8 @@ public class ArticleResponseDto {
     private String content;
 
     @Builder
-    public ArticleResponseDto(long id, List<Img> img, String title, long price, String region, long heartCnt, long commentCnt, String nickname, String createAt, String category, boolean isLike,String username,String content) {
+    public ArticleResponseDto(Long userId, long id, List<Img> img, String title, long price, String region, long heartCnt, long commentCnt, String nickname, String createAt, String category, boolean isLike, String username, String content) {
+        this.userId = userId;
         this.id = id;
         this.img = img;
         this.title = title;

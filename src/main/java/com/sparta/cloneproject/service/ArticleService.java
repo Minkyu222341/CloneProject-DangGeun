@@ -96,6 +96,7 @@ public class ArticleService {
         }
 
         ArticleResponseDto articleResponseDto = ArticleResponseDto.builder()
+                .userId(article.get().getUserId())
                 .title(article.get().getTitle())
                 .nickname(article.get().getNickname())
                 .category(article.get().getCategory())
@@ -186,9 +187,11 @@ public class ArticleService {
         }
         // S3버켓에있는 이미지 삭제 관련
         DeletedUrlPath deletedUrlPath = new DeletedUrlPath();
-//        deletedUrlPath.setDeletedUrlPath(findArticle.get().getImgList());
-        deletedUrlPathRepository.save(deletedUrlPath);
-
+        List<Img> findImageList = findArticle.get().getImgList();
+        for (Img img : findImageList) {
+            deletedUrlPath.setDeletedUrlPath(img.getImgUrl());
+            deletedUrlPathRepository.save(deletedUrlPath);
+        }
         articleRepository.deleteById(id);
         return true;
     }

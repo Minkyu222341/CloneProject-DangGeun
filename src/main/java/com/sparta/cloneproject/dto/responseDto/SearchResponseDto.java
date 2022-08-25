@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 public class SearchResponseDto {
     private Long id;
-
+    private Long userId;
     private String title;
     private Long price;
     private String region;
@@ -26,7 +26,8 @@ public class SearchResponseDto {
     private long commentCnt;
 
     @Builder
-    public SearchResponseDto(Long id, String title, Long price, String region, String category, String createAt, Boolean isLike, List<Img> imgList, long heartCnt, long commentCnt) {
+    public SearchResponseDto(Long userId, Long id, String title, Long price, String region, String category, String createAt, Boolean isLike, List<Img> imgList, long heartCnt, long commentCnt) {
+        this.userId = userId;
         this.id = id;
         this.title = title;
         this.price = price;
