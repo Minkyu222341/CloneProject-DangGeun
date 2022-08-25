@@ -86,8 +86,8 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                     .createAt(timeCustom.customTime(article.getCreateAt()))
                     .isLike(article.getIsLike())
                     .img(article.getImgList())
-                    .heartCnt(article.getCommentList().size())
-                    .commentCnt(article.getHeartList().size())
+                    .heartCnt(article.getHeartList().size())
+                    .commentCnt(article.getCommentList().size())
                     .build());
         }
         boolean hasNext = false;
