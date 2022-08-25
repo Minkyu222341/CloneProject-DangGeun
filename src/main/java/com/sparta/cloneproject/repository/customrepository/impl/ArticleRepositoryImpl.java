@@ -60,10 +60,10 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     }
 
     /**
-     * 무한스크롤
+     * 무한스크롤 , 카테고리 검색
      */
     @Override
-    public Slice<ArticleResponseDto> searchScroll(Pageable pageable,String category,String region) {
+    public Slice<ArticleResponseDto> searchScroll(Pageable pageable, String category, String region) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
         QueryResults<Article> result = queryFactory
                 .selectFrom(article)
@@ -99,12 +99,25 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     }
 
 
+    //    private BooleanExpression regionEq(String region) {
+//        return region != null ? article.region.eq(region) : null;
+//    }
     private BooleanExpression regionEq(String region) {
-        return region != null ? article.region.eq(region) : null;
+        if (region == null) {
+            return null;
+        } else if (region == "") {
+            return null;
+        }
+        return article.region.eq(region);
     }
 
     private BooleanExpression categoryEq(String category) {
-        return category != null ? article.category.eq(category) : null;
+        if (category == null) {
+            return null;
+        } else if (category == "") {
+            return null;
+        }
+        return article.category.eq(category);
     }
 
 }

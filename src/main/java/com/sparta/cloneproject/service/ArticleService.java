@@ -2,7 +2,6 @@ package com.sparta.cloneproject.service;
 
 import com.sparta.cloneproject.dto.requestDto.ArticleRequestDto;
 import com.sparta.cloneproject.dto.responseDto.ArticleResponseDto;
-import com.sparta.cloneproject.dto.responseDto.SearchResponseDto;
 import com.sparta.cloneproject.model.Article;
 import com.sparta.cloneproject.model.DeletedUrlPath;
 import com.sparta.cloneproject.model.Img;
@@ -203,15 +202,6 @@ public class ArticleService {
             s3Uploader.remove(deletedUrlPath.getDeletedUrlPath());
         }
         deletedUrlPathRepository.deleteAll();
-    }
-
-    /**
-     * 카데고리 조회
-     */
-    public List<SearchResponseDto> searchCategory(String region,String category) {
-        System.out.println("지역 : "+region);
-        System.out.println("카테고리 : "+category);
-        return articleRepository.search(region,category);
     }
 
 
