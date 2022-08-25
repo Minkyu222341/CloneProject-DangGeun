@@ -110,7 +110,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         } else if (region == "") {
             return null;
         }
-        return article.region.like(region);
+        return article.region.eq(region);
     }
 
     private BooleanExpression categoryEq(String category) {
@@ -119,7 +119,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         } else if (category == "") {
             return null;
         }
-        return article.category.like(category);
+        return article.category.eq(category);
     }
 
 }
